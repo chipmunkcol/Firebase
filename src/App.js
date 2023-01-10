@@ -1,10 +1,20 @@
 import React from "react";
+import { Outlet, useNavigate } from "react-router-dom";
+import { app, auth } from "./firebase/app";
 
 function App() {
+
+const navigate = useNavigate()
+
   return (
-    <div>
-      hello, Firebase!
-    </div>
+    <>
+    <ul>
+      <li onClick={()=>navigate('')}>메인 페이지</li>
+      <li onClick={()=>navigate('register')}>회원가입</li>
+      <li onClick={()=>navigate('login')}>로그인</li>
+    </ul>
+    <Outlet />
+    </>
   );
 }
 

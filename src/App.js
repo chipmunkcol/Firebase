@@ -1,6 +1,5 @@
 import React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { app, auth } from "./firebase/app";
 
 function App() {
 

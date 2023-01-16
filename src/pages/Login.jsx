@@ -1,6 +1,8 @@
 import { GithubAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth'
 import * as React from 'react'
+import { useNavigate } from 'react-router-dom'
 import { auth, provider } from '../firebase/app'
+import { MyStore } from '../store/userState'
 
 const Login = () => {
 
@@ -8,10 +10,11 @@ const [id, setId] = React.useState("")
 const [password, setPassword] = React.useState("")
 
 const [errMessage, seterrMessage] = React.useState('')
+const navigate = useNavigate();
 
+const { setLoginUser } = React.useContext(MyStore)
 const onSubmit = (e) => {
 e.preventDefault();
-
 // Firebase Auth 메서드
 signInWithEmailAndPassword(auth, id, password)
     .then((userInfo) => {
@@ -52,6 +55,9 @@ React.useEffect(()=>{
         if(user) {
             const uid = user.uid;
             console.log('uid: ', uid);
+            
+            setLoginUser(uid)
+            navigate('/home')
         }
     })
 },[])

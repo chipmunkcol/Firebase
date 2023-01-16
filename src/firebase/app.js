@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GithubAuthProvider } from "firebase/auth"
-import { child, get, getDatabase, push, ref, set, update } from "firebase/database"
+import { child, get, getDatabase, onValue, push, ref, set, update } from "firebase/database"
+
 
 const firebaseConfig = {
     apiKey: "AIzaSyBlmyA6ZK4aJ44O6lC010M5c17JWpiUAMA", 
@@ -18,43 +19,19 @@ export const auth = getAuth(app);
 export const provider = new GithubAuthProvider();
 
 
-const db = getDatabase();
-export const postFB = (uid, text) => { // uid = FB 에서 user_id 
-    set(ref(db, 'users/' + uid), {
-         text : text    
-    })
-}
-
-// export function postNewFB (uid, text) {
-//     const db  = getDatabase();
-//     const postDate = {
-//         uid: uid,
-//         text: text,
-//     };
-
-//     const newPostKey = push(child(ref(db), 'posts')).key;
-//     const updates = {};
-//     update['/posts' + newPostKey] = postDate;
-//     update['/user-posts/' + uid + '/' + newPostKey] = postDate;
-
-//     return update(ref(db), updates);
+export const db = getDatabase();
+// export const postFB = (userId, title) => {
+//     set(ref(db, 'users/' + userId), {
+//         title
+//     });
 // }
 
-export const postNewFB = (text) => {
-    const postListRef = ref(db, 'posts');
-    const newPostRef = push(postListRef);
-    set(newPostRef, {text})
-}
-
-export const getFB = (uid) => {
-    const dbRef = ref(db);
-    get(child(dbRef, `user/${uid}`)).then((state) => {
-        if (state.exists()) {
-            console.log(state.val());
-        } else {
-            console.log("데이터 없음")
-        }
-    }).catch((err) => {
-        console.log(err)
-    })
-}
+// export const postFB2 = (uid, postId, content) => {
+//     // Get a key for a new Post.
+//     // const newPostKey = push(child(ref(db), 'posts')).key;
+//     // Write the new post's data simultaneously in the posts list and the user's post list.
+//     const updates = {};
+//     updates['/posts/' + uid + '/' + postId] = content;
+  
+//     return update(ref(db), updates);
+// }

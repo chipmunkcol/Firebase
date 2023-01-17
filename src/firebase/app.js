@@ -18,8 +18,6 @@ export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const provider = new GithubAuthProvider();
 
-
-export const db = getDatabase();
 // export const postFB = (userId, title) => {
 //     set(ref(db, 'users/' + userId), {
 //         title

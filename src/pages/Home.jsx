@@ -1,38 +1,34 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { MyStore } from "../store/userState";
-import { collection, getDoc, getDocs, addDoc, getFirestore } from "firebase/firestore"
+import { collection, getDoc, getDocs, addDoc, getFirestore, onSnapshot, query, orderBy } from "firebase/firestore"
+
 
 function Home () {
 
 const { LoginUser, setLoginUser } = useContext(MyStore)
-const postRef = useRef(0)
-const postId = postRef.current
 const [DBdata, setDBdata] = useState([])
 console.log('DBdata: ', DBdata);
-
 const contentRef = useRef(null)
-const datebase = getFirestore()
-const getFB = async() => {
-    const bucketDB = collection(datebase, "bucket")
-    const query = await getDocs(bucketDB)
-    console.log('query: ', query);
-    query.forEach((doc) => {
-        // DBdata.concat(doc.data())
-        setDBdata([doc.data()])
-    })
-}
 
-const postFB = (text) => {
-    const bucketDB = collection(datebase, "bucket")
-    addDoc(bucketDB, text)
-}
+// firestore에서 가져오기
+const datebase = getFirestore()
 
 useEffect(()=>{
-    getFB()
+    const q = query(collection(datebase, "bucket"), orderBy("createdDate"))
+    const unsubscribe = onSnapshot(q, (state) => {
+        state.docs.map((v) => { 
+        const updateData = {...v.data(), id: v.id}
+        setDBdata(prev => [...prev, updateData])  
+        })
+    })
 }, [])
 
+// firestore에 저장하기
 
-
+const postFB = async(text) => {
+    const bucketDB = collection(datebase, "bucket")
+    await addDoc(bucketDB, text)
+}
 const onSubmit = (e) => {
     e.preventDefault();
     const content = contentRef.current.value;
@@ -61,7 +57,8 @@ if(!LoginUser) { return <h1>로그인 후 사용해주세요 {":)"}</h1> }
             </form>
 
             {DBdata?.map(data => 
-                <h3>{data?.content}</h3>
+                <h3
+                >{data?.content}</h3>
             )}
         {/* <h3>{DBdata?.content}</h3> */}
         </>
@@ -87,5 +84,15 @@ export default Home;
 //         body: JSON.stringify({
 //             text
 //         })
+//     })
+// }
+
+// const getFB = async() => {
+//     const bucketDB = collection(datebase, "bucket")
+//     const getBucket = await getDocs(bucketDB)
+
+//     getBucket.forEach((doc) => {
+//         const updateData = {...doc.data(), id: doc.id} // db데이터에 firebase에서 만드는 난수 id 추가해서 객체생성 
+//         setDBdata(prev => [...prev, updateData])
 //     })
 // }

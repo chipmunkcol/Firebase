@@ -6,10 +6,11 @@ function App() {
 
 const navigate = useNavigate()
 const [LoginUser, setLoginUser] = useState("")
+const [DBdata, setDBdata] = useState([])
 
   return (
     <>
-    <MyStore.Provider value={{LoginUser, setLoginUser}}>
+    <MyStore.Provider value={{LoginUser, setLoginUser, DBdata, setDBdata}}>
       <ul>
         <li onClick={()=>navigate('')}>메인 페이지</li>
         <li onClick={()=>navigate('register')}>회원가입</li>

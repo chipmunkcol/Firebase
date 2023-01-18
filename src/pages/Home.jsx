@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { MyStore } from "../store/userState";
 import { collection, getDoc, getDocs, addDoc, getFirestore, onSnapshot, query, orderBy } from "firebase/firestore"
 
@@ -8,19 +8,25 @@ function Home () {
 const { LoginUser, setLoginUser } = useContext(MyStore)
 const [DBdata, setDBdata] = useState([])
 console.log('DBdata: ', DBdata);
+// const [loading, setLoading] = useState(false)
 const contentRef = useRef(null)
 
-// firestore에서 가져오기
+// firestore에서 실시간 가져오기
 const datebase = getFirestore()
 
-useEffect(()=>{
+const fnOnsnapshot = () => {
     const q = query(collection(datebase, "bucket"), orderBy("createdDate"))
-    const unsubscribe = onSnapshot(q, (state) => {
+
+    onSnapshot(q, (state) => {
+        setDBdata([])   // 이상하게 함수 호출이 두번씩돼서 dbdata를 초기화 시켜줬는데 디버깅 해봐도 원인을 정확히 모르겠다.. 한참 고민했는데 흠.. 뭐 덕분에 디버거 쓰는 법 정도는 익힌듯 
         state.docs.map((v) => { 
         const updateData = {...v.data(), id: v.id}
-        setDBdata(prev => [...prev, updateData])  
+        setDBdata(prev => [...prev, updateData])
         })
     })
+}
+useEffect(()=>{
+    fnOnsnapshot()
 }, [])
 
 // firestore에 저장하기
@@ -56,7 +62,7 @@ if(!LoginUser) { return <h1>로그인 후 사용해주세요 {":)"}</h1> }
                 <button>database에 등록</button>
             </form>
 
-            {DBdata?.map(data => 
+            {DBdata?.reverse().map(data => 
                 <h3
                 >{data?.content}</h3>
             )}
